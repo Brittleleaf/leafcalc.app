@@ -3487,6 +3487,59 @@
                 }
             }
         };
+        // ===== MÓDULO DE VISIBILIDAD DE BILLETERAS =====
+        const VisibilityManager = {
+            hiddenWallets: [],
+            init() {
+                this.hiddenWallets = JSON.parse(localStorage.getItem('hiddenWallets')) || [];
+            },
+            save() {
+                localStorage.setItem('hiddenWallets', JSON.stringify(this.hiddenWallets));
+            },
+            
+            // Función para verificar si una billetera está oculta
+            isWalletHidden(id) {
+                // Primero verificar si la billetera está deshabilitada por el desarrollador
+                const allWallets = [...withdrawWallets, ...wallets];
+                const wallet = allWallets.find(w => w.id === id);
+                if (wallet && wallet.enabled === false) {
+                    return true;
+                }
+                // Luego verificar si el usuario la ocultó
+                return this.hiddenWallets.includes(id);
+            },
+            
+            // Función para ocultar una billetera (solo para el usuario)
+            hideWallet(id) {
+                // No permitir ocultar billeteras deshabilitadas por el desarrollador
+                const allWallets = [...withdrawWallets, ...wallets];
+                const wallet = allWallets.find(w => w.id === id);
+                if (wallet && wallet.enabled === false) {
+                    return;
+                }
+                
+                if (!this.isWalletHidden(id)) {
+                    this.hiddenWallets.push(id);
+                    this.save();
+                    CalculationManager.calculateAllResults();
+                }
+            },
+            
+            // Función para mostrar una billetera (solo para el usuario)
+            showWallet(id) {
+                // No permitir mostrar billeteras deshabilitadas por el desarrollador
+                const allWallets = [...withdrawWallets, ...wallets];
+                const wallet = allWallets.find(w => w.id === id);
+                if (wallet && wallet.enabled === false) {
+                    return;
+                }
+                
+                this.hiddenWallets = this.hiddenWallets.filter(walletId => walletId !== id);
+                this.save();
+                CalculationManager.calculateAllResults();
+            }
+        };
+        
         // ===== MÓDULO DE ALERTAS =====
         const AlertManager = {
             alerts: [],
@@ -3977,7 +4030,7 @@
         const CalculationManager = {
             calculateWithdrawResults() {
                 const results = [];
-                const visibleWithdrawWallets = withdrawWallets.filter(w => !VisibilityManager.isWalletHidden(w.id));
+                const visibleWithdrawWallets = withdrawWallets.filter(w => !VisibilityManager.isWalletHidden(w.id) && w.enabled !== false);
                 visibleWithdrawWallets.forEach(wallet => {
                     const exchangeRate = wallet.exchangeRate;
                     if (!exchangeRate) return;
@@ -4002,7 +4055,7 @@
             calculateGeneralResults() {
                 let bestBuyWallet = null;
                 let bestSellWallet = null;
-                const visibleWallets = wallets.filter(w => !VisibilityManager.isWalletHidden(w.id));
+                const visibleWallets = wallets.filter(w => !VisibilityManager.isWalletHidden(w.id) && w.enabled !== false);
                 visibleWallets.forEach(wallet => {
                     if (wallet.compraRate && (!bestBuyWallet || wallet.compraRate < bestBuyWallet.compraRate)) {
                         bestBuyWallet = wallet;
@@ -4041,59 +4094,6 @@
                 } else {
                     this.calculateSendMode();
                 }
-            }
-        };
-        
-        // ===== MÓDULO DE VISIBILIDAD DE BILLETERAS =====
-        const VisibilityManager = {
-            hiddenWallets: [],
-            init() {
-                this.hiddenWallets = JSON.parse(localStorage.getItem('hiddenWallets')) || [];
-            },
-            save() {
-                localStorage.setItem('hiddenWallets', JSON.stringify(this.hiddenWallets));
-            },
-            
-            // Función para verificar si una billetera está oculta
-            isWalletHidden(id) {
-                // Primero verificar si la billetera está deshabilitada por el desarrollador
-                const allWallets = [...withdrawWallets, ...wallets];
-                const wallet = allWallets.find(w => w.id === id);
-                if (wallet && wallet.enabled === false) {
-                    return true;
-                }
-                // Luego verificar si el usuario la ocultó
-                return this.hiddenWallets.includes(id);
-            },
-            
-            // Función para ocultar una billetera (solo para el usuario)
-            hideWallet(id) {
-                // No permitir ocultar billeteras deshabilitadas por el desarrollador
-                const allWallets = [...withdrawWallets, ...wallets];
-                const wallet = allWallets.find(w => w.id === id);
-                if (wallet && wallet.enabled === false) {
-                    return;
-                }
-                
-                if (!this.isWalletHidden(id)) {
-                    this.hiddenWallets.push(id);
-                    this.save();
-                    CalculationManager.calculateAllResults();
-                }
-            },
-            
-            // Función para mostrar una billetera (solo para el usuario)
-            showWallet(id) {
-                // No permitir mostrar billeteras deshabilitadas por el desarrollador
-                const allWallets = [...withdrawWallets, ...wallets];
-                const wallet = allWallets.find(w => w.id === id);
-                if (wallet && wallet.enabled === false) {
-                    return;
-                }
-                
-                this.hiddenWallets = this.hiddenWallets.filter(walletId => walletId !== id);
-                this.save();
-                CalculationManager.calculateAllResults();
             }
         };
         
@@ -4221,7 +4221,7 @@
                 if (action === 'clear-notifications') {
                     NotificationManager.clearNotifications();
                 } else if (action === 'show-wallet') {
-                    this.showWallet(id);
+                    VisibilityManager.showWallet(id);
                 }
                 this.closeConfirmationDialog();
             },
@@ -4283,7 +4283,7 @@
                 } else if (item.dataset.action === 'alert') {
                     AlertManager.openPriceAlertPanel(walletId, walletType);
                 } else if (item.dataset.action === 'hide') {
-                    this.hideWallet(walletId);
+                    VisibilityManager.hideWallet(walletId);
                 }
                 this.closeAllWalletOptionsMenus();
             },
@@ -4402,78 +4402,6 @@
                         }, 500);
                     }
                 });
-            },
-            hideWallet(walletId) {
-                const wallet = wallets.find(w => w.id === walletId);
-                if (wallet) {
-                    wallet.hidden = true;
-                    this.saveWalletsState();
-                    CalculationManager.calculateGeneralResults();
-                }
-            },
-            showWallet(walletId) {
-                const wallet = wallets.find(w => w.id === walletId);
-                if (wallet) {
-                    wallet.hidden = false;
-                    this.saveWalletsState();
-                    CalculationManager.calculateGeneralResults();
-                }
-            },
-            
-            saveWalletsState() {
-                const state = wallets.map(w => ({
-                    id: w.id,
-                    hidden: w.hidden,
-                    currentStablecoin: w.currentStablecoin
-                }));
-                localStorage.setItem('walletsState', JSON.stringify(state));
-            },
-            
-            loadWalletsState() {
-                const savedState = localStorage.getItem('walletsState');
-                if (savedState) {
-                    const state = JSON.parse(savedState);
-                    state.forEach(s => {
-                        const wallet = wallets.find(w => w.id === s.id);
-                        if (wallet) {
-                            wallet.hidden = s.hidden;
-                            if (s.currentStablecoin) {
-                                wallet.currentStablecoin = s.currentStablecoin;
-                            }
-                        }
-                    });
-                }
-            },
-            
-            // Función para animar el reordenamiento de billeteras
-            animateWalletReorder(container, newOrder) {
-                const cards = Array.from(container.children);
-                const currentOrder = cards.map(card => card.dataset.walletId);
-                
-                // Si no hay cambios en el orden, no animar
-                if (JSON.stringify(currentOrder) === JSON.stringify(newOrder)) return;
-                
-                // Aplicar transición para animación suave
-                cards.forEach(card => {
-                    card.style.transition = 'transform 0.5s ease, opacity 0.3s ease';
-                    card.style.opacity = '0.8';
-                });
-                
-                // Forzar reflow para que la transición se aplique
-                container.offsetHeight;
-                
-                // Reordenar en el DOM
-                newOrder.forEach(walletId => {
-                    const card = cards.find(c => c.dataset.walletId === walletId);
-                    if (card) container.appendChild(card);
-                });
-                
-                // Restaurar opacidad después de la animación
-                setTimeout(() => {
-                    cards.forEach(card => {
-                        card.style.opacity = '1';
-                    });
-                }, 100);
             },
             
             // Función mejorada para renderizar billeteras con animación
@@ -4616,8 +4544,8 @@
                 
                 const currentCoin = wallet.currentStablecoin || 'USDC';
                 const logoUrl = currentCoin.toUpperCase() === 'USDC' 
-                    ? 'https://raw.githubusercontent.com/Brittleleaf/leafvietcalc.github.io/main/Images/icons/usd-coin-usdc-logo.svg' 
-                    : 'https://raw.githubusercontent.com/Brittleleaf/leafvietcalc.github.io/main/Images/icons/tether-usdt-logo.svg';
+                    ? 'https://raw.githubusercontent.com/Brittleleaf/leafcalc.app/main/Images/Icons/usd-coin-usdc-logo.svg' 
+                    : 'https://raw.githubusercontent.com/Brittleleaf/leafcalc.app/main/Images/Icons/tether-usdt-logo.svg';
                     
                 return `
                     <div class="stablecoin-tag">
@@ -4683,8 +4611,8 @@
                 const canToggle = Object.keys(wallet.stablecoinApis).length > 1;
                 
                 const logoUrl = currentCoin.toUpperCase() === 'USDC' 
-                    ? 'https://raw.githubusercontent.com/Brittleleaf/leafvietcalc.github.io/main/Images/icons/usd-coin-usdc-logo.svg' 
-                    : 'https://raw.githubusercontent.com/Brittleleaf/leafvietcalc.github.io/main/Images/icons/tether-usdt-logo.svg';
+                    ? 'https://raw.githubusercontent.com/Brittleleaf/leafcalc.app/main/Images/Icons/usd-coin-usdc-logo.svg' 
+                    : 'https://raw.githubusercontent.com/Brittleleaf/leafcalc.app/main/Images/Icons/tether-usdt-logo.svg';
                 return `
                     <div class="stablecoin-tag ${canToggle ? 'clickable' : ''}" data-wallet-id="${wallet.id}">
                         <img src="${logoUrl}" alt="${currentCoin} logo">
@@ -4739,6 +4667,37 @@
                 });
                 input.addEventListener('blur', () => container.classList.remove('active'));
                 input.addEventListener('click', (e) => e.stopPropagation());
+            },
+            
+            // Función para animar el reordenamiento de billeteras
+            animateWalletReorder(container, newOrder) {
+                const cards = Array.from(container.children);
+                const currentOrder = cards.map(card => card.dataset.walletId);
+                
+                // Si no hay cambios en el orden, no animar
+                if (JSON.stringify(currentOrder) === JSON.stringify(newOrder)) return;
+                
+                // Aplicar transición para animación suave
+                cards.forEach(card => {
+                    card.style.transition = 'transform 0.5s ease, opacity 0.3s ease';
+                    card.style.opacity = '0.8';
+                });
+                
+                // Forzar reflow para que la transición se aplique
+                container.offsetHeight;
+                
+                // Reordenar en el DOM
+                newOrder.forEach(walletId => {
+                    const card = cards.find(c => c.dataset.walletId === walletId);
+                    if (card) container.appendChild(card);
+                });
+                
+                // Restaurar opacidad después de la animación
+                setTimeout(() => {
+                    cards.forEach(card => {
+                        card.style.opacity = '1';
+                    });
+                }, 100);
             }
         };
         // ===== DATOS DE LA APLICACIÓN =====
@@ -4746,7 +4705,7 @@
             { 
                 id: 'dolarapp', 
                 name: 'Dolar App', 
-                icon: 'https://raw.githubusercontent.com/Brittleleaf/leafvietcalc.github.io/main/Images/icons/dolar-app.svg', 
+                icon: 'https://raw.githubusercontent.com/Brittleleaf/leafcalc.app/main/Images/Icons/dolar-app.svg', 
                 iconClass: 'dolarapp-icon', 
                 exchangeRate: 0, 
                 stablecoinApis: { USDC: 'https://criptoya.com/api/dolarapp/USDC/ARS/0.1' }, 
@@ -4758,7 +4717,7 @@
             { 
                 id: 'prexarg', 
                 name: 'Prex ARG', 
-                icon: 'https://raw.githubusercontent.com/Brittleleaf/leafvietcalc.github.io/main/Images/icons/prex.svg', 
+                icon: 'https://raw.githubusercontent.com/Brittleleaf/leafcalc.app/main/Images/Icons/prex.svg', 
                 iconClass: 'prexarg-icon', 
                 exchangeRate: 0, 
                 downloadLink: 'https://play.google.com/store/apps/details?id=com.prex.card', 
@@ -4768,7 +4727,7 @@
             { 
                 id: 'prexuy', 
                 name: 'Prex UY', 
-                icon: 'https://raw.githubusercontent.com/Brittleleaf/leafvietcalc.github.io/main/Images/icons/prex.svg', 
+                icon: 'https://raw.githubusercontent.com/Brittleleaf/leafcalc.app/main/Images/Icons/prex.svg', 
                 iconClass: 'prexuy-icon', 
                 exchangeRate: 0, 
                 downloadLink: 'https://play.google.com/store/apps/details?id=com.prex.card', 
@@ -4776,12 +4735,11 @@
                 enabled: true // Habilitada por defecto
             }
         ];
-
         let wallets = [
             { 
                 id: 'uala', 
                 name: 'Ualá', 
-                icon: 'https://raw.githubusercontent.com/Brittleleaf/leafvietcalc.github.io/main/Images/icons/uala.svg', 
+                icon: 'https://raw.githubusercontent.com/Brittleleaf/leafcalc.app/main/Images/Icons/uala.svg', 
                 iconClass: 'uala-icon', 
                 compraRate: 0, 
                 ventaRate: 0, 
@@ -4796,7 +4754,7 @@
             { 
                 id: 'lemon', 
                 name: 'Lemon Cash', 
-                icon: 'https://raw.githubusercontent.com/Brittleleaf/leafvietcalc.github.io/main/Images/icons/lemon.svg', 
+                icon: 'https://raw.githubusercontent.com/Brittleleaf/leafcalc.app/main/Images/Icons/lemon.svg', 
                 iconClass: 'lemon-icon', 
                 compraRate: 0, 
                 ventaRate: 0, 
@@ -4812,7 +4770,7 @@
             { 
                 id: 'santander', 
                 name: 'Banco Santander', 
-                icon: 'https://raw.githubusercontent.com/Brittleleaf/leafvietcalc.github.io/main/Images/icons/SAN.svg', 
+                icon: 'https://raw.githubusercontent.com/Brittleleaf/leafcalc.app/main/Images/Icons/SAN.svg', 
                 iconClass: 'santander-icon', 
                 compraRate: 0, 
                 ventaRate: 0, 
@@ -4827,7 +4785,7 @@
             { 
                 id: 'belo', 
                 name: 'Belo', 
-                icon: 'https://raw.githubusercontent.com/Brittleleaf/leafvietcalc.github.io/main/Images/icons/belo.svg', 
+                icon: 'https://raw.githubusercontent.com/Brittleleaf/leafcalc.app/main/Images/Icons/belo.svg', 
                 iconClass: 'belo-icon', 
                 compraRate: 0, 
                 ventaRate: 0, 
@@ -4843,7 +4801,7 @@
             { 
                 id: 'airtm', 
                 name: 'Airtm', 
-                icon: 'https://raw.githubusercontent.com/Brittleleaf/leafvietcalc.github.io/main/Images/icons/AIRTM.png', 
+                icon: 'https://raw.githubusercontent.com/Brittleleaf/leafcalc.app/main/Images/Icons/AIRTM.png', 
                 iconClass: 'airtm-icon', 
                 compraRate: 0, 
                 ventaRate: 0, 
@@ -4859,7 +4817,7 @@
             { 
                 id: 'brubank', 
                 name: 'Brubank', 
-                icon: 'https://raw.githubusercontent.com/Brittleleaf/leafvietcalc.github.io/main/Images/icons/brubank.svg', 
+                icon: 'https://raw.githubusercontent.com/Brittleleaf/leafcalc.app/main/Images/Icons/brubank.svg', 
                 iconClass: 'brubank-icon', 
                 compraRate: 0, 
                 ventaRate: 0, 
@@ -4874,7 +4832,7 @@
             { 
                 id: 'bna', 
                 name: 'Banco Nación', 
-                icon: 'https://raw.githubusercontent.com/Brittleleaf/leafvietcalc.github.io/main/Images/icons/banco-nacion.svg', 
+                icon: 'https://raw.githubusercontent.com/Brittleleaf/leafcalc.app/main/Images/Icons/banco-nacion.svg', 
                 iconClass: 'bna-icon', 
                 compraRate: 0, 
                 ventaRate: 0, 
@@ -4889,7 +4847,7 @@
             { 
                 id: 'icbc', 
                 name: 'ICBC', 
-                icon: 'https://raw.githubusercontent.com/Brittleleaf/leafvietcalc.github.io/main/Images/icons/banco-icbc.svg', 
+                icon: 'https://raw.githubusercontent.com/Brittleleaf/leafcalc.app/main/Images/Icons/banco-icbc.svg', 
                 iconClass: 'icbc-icon', 
                 compraRate: 0, 
                 ventaRate: 0, 
@@ -4904,7 +4862,7 @@
             { 
                 id: 'mercadopago', 
                 name: 'Mercado Pago', 
-                icon: 'https://raw.githubusercontent.com/Brittleleaf/leafvietcalc.github.io/main/Images/icons/mercadopago.svg', 
+                icon: 'https://raw.githubusercontent.com/Brittleleaf/leafcalc.app/main/Images/Icons/mercadopago.svg', 
                 iconClass: 'mercadopago-icon', 
                 compraRate: 0, 
                 ventaRate: 0, 
@@ -4917,7 +4875,7 @@
             { 
                 id: 'paypal', 
                 name: 'PayPal', 
-                icon: 'https://raw.githubusercontent.com/Brittleleaf/leafvietcalc.github.io/main/Images/icons/PYPL.svg', 
+                icon: 'https://raw.githubusercontent.com/Brittleleaf/leafcalc.app/main/Images/Icons/PYPL.svg', 
                 iconClass: 'paypal-icon', 
                 compraRate: 0, 
                 ventaRate: 0, 
@@ -4929,7 +4887,7 @@
             { 
                 id: 'naranjax', 
                 name: 'Naranja X', 
-                icon: 'https://raw.githubusercontent.com/Brittleleaf/leafvietcalc.github.io/main/Images/icons/naranja-x.svg', 
+                icon: 'https://raw.githubusercontent.com/Brittleleaf/leafcalc.app/main/Images/Icons/naranja-x.svg', 
                 iconClass: 'naranjax-icon', 
                 compraRate: 0, 
                 ventaRate: 0, 
@@ -4942,7 +4900,7 @@
             { 
                 id: 'galicia', 
                 name: 'Banco Galicia', 
-                icon: 'https://raw.githubusercontent.com/Brittleleaf/leafvietcalc.github.io/main/Images/icons/banco-galicia.svg', 
+                icon: 'https://raw.githubusercontent.com/Brittleleaf/leafcalc.app/main/Images/Icons/banco-galicia.svg', 
                 iconClass: 'galicia-icon', 
                 compraRate: 0, 
                 ventaRate: 0, 
@@ -4957,7 +4915,7 @@
             { 
                 id: 'hipotecario', 
                 name: 'Banco Hipotecario', 
-                icon: 'https://raw.githubusercontent.com/Brittleleaf/leafvietcalc.github.io/main/Images/icons/banco-hipotecario.svg', 
+                icon: 'https://raw.githubusercontent.com/Brittleleaf/leafcalc.app/main/Images/Icons/banco-hipotecario.svg', 
                 iconClass: 'hipotecario-icon', 
                 compraRate: 0, 
                 ventaRate: 0, 
@@ -4972,7 +4930,7 @@
             { 
                 id: 'macro', 
                 name: 'Banco Macro', 
-                icon: 'https://raw.githubusercontent.com/Brittleleaf/leafvietcalc.github.io/main/Images/icons/BMA.svg', 
+                icon: 'https://raw.githubusercontent.com/Brittleleaf/leafcalc.app/main/Images/Icons/BMA.svg', 
                 iconClass: 'macro-icon', 
                 compraRate: 0, 
                 ventaRate: 0, 
@@ -4987,7 +4945,7 @@
             { 
                 id: 'supervielle', 
                 name: 'Supervielle', 
-                icon: 'https://raw.githubusercontent.com/Brittleleaf/leafvietcalc.github.io/main/Images/icons/banco-supervielle.svg', 
+                icon: 'https://raw.githubusercontent.com/Brittleleaf/leafcalc.app/main/Images/Icons/banco-supervielle.svg', 
                 iconClass: 'supervielle-icon', 
                 compraRate: 0, 
                 ventaRate: 0, 
@@ -5002,7 +4960,7 @@
             { 
                 id: 'ciudad', 
                 name: 'Banco Ciudad', 
-                icon: 'https://raw.githubusercontent.com/Brittleleaf/leafvietcalc.github.io/main/Images/icons/banco-ciudad.svg', 
+                icon: 'https://raw.githubusercontent.com/Brittleleaf/leafcalc.app/main/Images/Icons/banco-ciudad.svg', 
                 iconClass: 'ciudad-icon', 
                 compraRate: 0, 
                 ventaRate: 0, 
@@ -5017,7 +4975,7 @@
             { 
                 id: 'plus', 
                 name: 'Plus Crypto', 
-                icon: 'https://raw.githubusercontent.com/Brittleleaf/leafvietcalc.github.io/main/Images/icons/plus-crypto.svg', 
+                icon: 'https://raw.githubusercontent.com/Brittleleaf/leafcalc.app/main/Images/Icons/plus-crypto.svg', 
                 iconClass: 'plus-icon', 
                 compraRate: 0, 
                 ventaRate: 0, 
@@ -5033,7 +4991,7 @@
             { 
                 id: 'patagonia', 
                 name: 'Banco Patagonia', 
-                icon: 'https://raw.githubusercontent.com/Brittleleaf/leafvietcalc.github.io/main/Images/icons/BPAT.svg', 
+                icon: 'https://raw.githubusercontent.com/Brittleleaf/leafcalc.app/main/Images/Icons/BPAT.svg', 
                 iconClass: 'patagonia-icon', 
                 compraRate: 0, 
                 ventaRate: 0, 
@@ -5048,7 +5006,7 @@
             { 
                 id: 'bbva', 
                 name: 'BBVA', 
-                icon: 'https://raw.githubusercontent.com/Brittleleaf/leafvietcalc.github.io/main/Images/icons/BBV.svg', 
+                icon: 'https://raw.githubusercontent.com/Brittleleaf/leafcalc.app/main/Images/Icons/BBV.svg', 
                 iconClass: 'bbva-icon', 
                 compraRate: 0, 
                 ventaRate: 0, 
@@ -5060,7 +5018,7 @@
                 updateGroup: 'scraping',
                 enabled: true // Habilitada por defecto
             }
-        ].map(w => ({ ...w, hidden: false }));
+        ];
         const paypalConfig = {
             receive: { commissionRate: 0.054, fixedFee: 0.30 },
             send: { commissionRate: 0.054, fixedFee: 0.30 }
@@ -5076,7 +5034,6 @@
         document.addEventListener('DOMContentLoaded', async () => {
             // 1. Inicializar todos los módulos
             VisibilityManager.init();
-            UIManager.loadWalletsState();
             RateManager.init();
             AlertManager.init();
             NotificationManager.init();
