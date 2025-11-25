@@ -235,7 +235,7 @@
             min-width: 0;
         }
         
-        /* Botones superiores - Versión corregida */
+        /* Botones superiores - VERSIÓN CORREGIDA */
         .top-bar button {
             position: absolute;
             top: calc(var(--top-visible) / 2);
@@ -247,20 +247,21 @@
             z-index: 10;
             padding: 0;
             border-radius: 0;
-            transition: none;
+            transition: transform 0.2s ease;
             width: auto;
             height: auto;
         }
-        
+
         .top-bar button:hover {
             background-color: transparent;
+            transform: translateY(-50%) scale(1.08); /* Mantener centrado y escalar */
         }
-        
+
         .top-bar button:active {
-            transform: translateY(-50%);
+            transform: translateY(-50%) scale(0.95); /* Mantener centrado y escalar */
         }
         
-        /* Botón de perfil - Versión corregida */
+        /* Botón de perfil - VERSIÓN CORREGIDA */
         .profile-btn {
             left: calc(var(--top-end-width) / 2 - 18px);
             width: 36px !important;
@@ -269,7 +270,7 @@
             align-items: center;
             justify-content: center;
         }
-        
+
         .profile-bubble {
             width: 36px;
             height: 36px;
@@ -277,14 +278,15 @@
             overflow: hidden;
             border: 2px solid var(--primary-color);
             transition: transform 0.2s ease;
+            transform-origin: center; /* Asegurar que el escalado sea desde el centro */
         }
-        
+
         .profile-btn:hover .profile-bubble {
-            transform: scale(1.08);
+            transform: scale(1.08); /* Solo escalar, sin desplazamiento */
         }
-        
+
         .profile-btn:active .profile-bubble {
-            transform: scale(0.95);
+            transform: scale(0.95); /* Solo escalar, sin desplazamiento */
         }
         
         .profile-img {
@@ -305,7 +307,7 @@
             white-space: nowrap;
         }
         
-        /* Botón de notificaciones - Versión corregida */
+        /* Botón de notificaciones - VERSIÓN CORREGIDA */
         .notification-btn {
             right: calc(var(--top-end-width) / 2 - 18px);
             width: 36px !important;
@@ -314,20 +316,21 @@
             align-items: center;
             justify-content: center;
         }
-        
+
         .notification-btn i {
             font-size: 1.25rem;
             transition: transform 0.2s ease;
+            transform-origin: center; /* Asegurar que el escalado sea desde el centro */
         }
-        
+
         .notification-btn:hover i {
-            transform: scale(1.08);
+            transform: scale(1.08); /* Solo escalar, sin desplazamiento */
         }
-        
+
         .notification-btn:active i {
-            transform: scale(0.95);
+            transform: scale(0.95); /* Solo escalar, sin desplazamiento */
         }
-        
+
         .notification-badge {
             position: absolute;
             top: -8px;
@@ -344,14 +347,15 @@
             justify-content: center;
             box-shadow: 0 2px 5px rgba(0,0,0,0.2);
             transition: transform 0.2s ease;
+            transform-origin: center; /* Asegurar que el escalado sea desde el centro */
         }
-        
+
         .notification-btn:hover .notification-badge {
-            transform: scale(1.05);
+            transform: scale(1.05); /* Solo escalar, sin desplazamiento */
         }
-        
+
         .notification-btn:active .notification-badge {
-            transform: scale(0.9);
+            transform: scale(0.9); /* Solo escalar, sin desplazamiento */
         }
         
         /* Barra Inferior */
