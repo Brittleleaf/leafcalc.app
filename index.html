@@ -84,6 +84,18 @@
             --alert-icon-light: #5c19ae;
             --alert-icon-dark: #9d4edd;
             --icon-color: #5c19ae;
+            
+            /* Variables para mejoras */
+            --breakpoint-mobile: 768px;
+            --breakpoint-tablet: 1024px;
+            
+            /* === JERARQUÍA Z-INDEX (MEJORADA) === */
+            --z-nav: 50;
+            --z-overlay: 990;
+            --z-menu: 1000;
+            --z-panel-1: 1010;
+            --z-panel-2: 1020;
+            --z-modal: 2000; /* Alertas externas */
         }
         
         /* --- Color Themes --- */
@@ -212,6 +224,7 @@
             min-width: 320px;
             overflow-x: hidden;
             font-family: 'Inter', sans-serif;
+            transition: padding 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
         
         .container {
@@ -219,6 +232,7 @@
             margin: 0 auto;
             padding: 20px;
             min-height: 100vh;
+            transition: filter 0.4s ease;
         }
         
         .section-title {
@@ -242,6 +256,7 @@
             display: flex;
             z-index: 40;
             filter: drop-shadow(0 2px 8px rgba(0,0,0,0.15));
+            transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
         
         .top-bar svg {
@@ -389,8 +404,9 @@
             left: 0;
             width: 100%;
             height: 5rem;
-            z-index: 50;
+            z-index: var(--z-nav);
             bottom: env(safe-area-inset-bottom, 0);
+            transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
         
         .nav-bg {
@@ -437,11 +453,12 @@
             justify-content: center;
             text-decoration: none;
             color: var(--bottom-bar-text);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             font-weight: 500;
             flex-basis: 20%;
             min-width: 60px;
             padding: 0 5px;
+            position: relative;
         }
         
         .nav-item.active {
@@ -498,11 +515,13 @@
             border: 4px solid var(--bg-color);
             z-index: 20;
             cursor: pointer;
-            animation: pulse-shadow 2.5s infinite ease-in-out;
+            animation: pulse-shadow 3s infinite ease-in-out;
         }
         
         .center-button:hover {
-            transform: translateX(-50%) scale(1.05);
+            transform: translateX(-50%) scale(1.1);
+            animation: none;
+            box-shadow: 0 10px 35px rgba(34, 197, 94, 0.7);
         }
         
         .center-button .nav-icon {
@@ -514,8 +533,14 @@
         }
         
         @keyframes pulse-shadow {
-            0%, 100% { box-shadow: 0 5px 20px rgba(34, 197, 94, 0.4); }
-            50% { box-shadow: 0 8px 30px rgba(34, 197, 94, 0.6); }
+            0%, 100% { 
+                box-shadow: 0 5px 20px rgba(34, 197, 94, 0.4);
+                transform: translateX(-50%) scale(1);
+            }
+            50% { 
+                box-shadow: 0 8px 30px rgba(34, 197, 94, 0.6);
+                transform: translateX(-50%) scale(1.05);
+            }
         }
         
         /* ===== ESTILOS DE CONTENIDO ===== */
@@ -538,13 +563,14 @@
         
         .tab-content-wrapper {
             opacity: 0;
-            transform: translateX(20px);
-            transition: opacity 0.3s ease, transform 0.3s ease;
+            transform: translateY(10px);
+            transition: opacity 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94), 
+                        transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
         
         .tab-content-wrapper.active {
             opacity: 1;
-            transform: translateX(0);
+            transform: translateY(0);
         }
         
         /* ===== ESTILOS DE CAMPOS DE MONTO ===== */
@@ -591,7 +617,7 @@
             font-size: 12px;
             font-weight: bold;
             z-index: 1;
-            transition: transform 0.2s ease;
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
         
         .amount-input-container {
@@ -601,7 +627,16 @@
             margin-bottom: 5px;
             box-shadow: var(--shadow);
             text-align: center;
-            transition: transform 0.2s ease, background-color 0.3s;
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        
+        .amount-input-container:focus-within {
+            transform: scale(1.02);
+            box-shadow: 0 5px 20px rgba(92, 25, 174, 0.2);
+        }
+        
+        .amount-input-container:focus-within .currency-bubble {
+            transform: translateX(-50%) scale(1.1);
         }
         
         .amount-input-container h2,
@@ -744,19 +779,21 @@
             border-radius: 12px;
             padding: 20px;
             box-shadow: var(--shadow);
-            transition: transform 0.5s ease, opacity 0.3s ease, box-shadow 0.5s ease;
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             border: 2px solid transparent;
             position: relative;
             padding-top: 25px;
+            transform-origin: center;
+            animation: cardAppear 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
         }
         
         .wallet-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
         }
         
         .wallet-card:active {
-            transform: translateY(-1px);
+            transform: translateY(-2px) scale(1.01);
         }
         
         .wallet-card.best-option {
@@ -1001,155 +1038,314 @@
             font-family: var(--font-primary);
         }
         
-        /* ===== ESTILOS DE PANELES MODALES ===== */
-        .modal-panel {
-            display: none;
-            position: fixed;
+        /* ===== SISTEMA DE NAVEGACIÓN LATERAL MEJORADO ===== */
+
+        /* 1. Overlay */
+        .overlay { 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            background-color: rgba(0,0,0,0.5); 
+            z-index: var(--z-overlay); 
+            display: none; 
+            transition: opacity 0.3s ease; 
+        }
+        
+        .overlay.active { 
+            display: block; 
+        }
+
+        /* 2. Menú Lateral (Nivel 0) */
+        .side-menu { 
+            position: fixed; 
+            top: 0; 
+            left: -100%; 
+            width: 100%; 
+            height: 100%; 
+            background-color: var(--menu-bg); 
+            box-shadow: 2px 0 10px rgba(0,0,0,0.2); 
+            z-index: var(--z-menu); 
+            transition: left 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); 
+            overflow-y: auto; 
+            display: flex; 
+            flex-direction: column; 
+        }
+        
+        .side-menu.open { 
+            left: 0; 
+        }
+        
+        .menu-header { 
+            background-color: var(--menu-header); 
+            color: white; 
+            padding: 25px 20px; 
+            text-align: center; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            position: relative; 
+            overflow: hidden;
+        }
+        
+        .menu-header::before {
+            content: '';
+            position: absolute;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.7);
-            z-index: 1001;
+            right: 0;
+            bottom: 0;
+            background-image: var(--profile-bg-image, none);
+            background-size: cover;
+            background-position: center;
+            filter: blur(15px) brightness(0.6);
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            z-index: 1;
+        }
+        
+        .menu-header.has-profile-bg::before {
+            opacity: 1;
+        }
+        
+        .menu-header > *:not(.menu-close-btn) {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .menu-close-btn { 
+            position: absolute; 
+            top: 15px; 
+            right: 15px; 
+            background: none; 
+            border: none; 
+            color: white; 
+            font-size: 20px; 
+            cursor: pointer; 
+            padding: 5px; 
+            width: 36px; 
+            height: 36px; 
+            display: flex;
             align-items: center;
             justify-content: center;
-            overflow-y: auto;
+            z-index: 3;
         }
         
-        .modal-panel.active {
-            display: flex;
+        .profile-image-container { 
+            width: 120px; 
+            height: 120px; 
+            border-radius: 50%; 
+            overflow: hidden; 
+            margin-bottom: 15px; 
+            border: 3px solid rgba(255, 255, 255, 0.8); 
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
         }
         
+        .profile-image-container img { 
+            width: 100%; 
+            height: 100%; 
+            object-fit: cover; 
+        }
+        
+        .menu-options { 
+            padding: 20px 0; 
+            flex: 1; 
+        }
+        
+        .menu-option { 
+            display: flex; 
+            align-items: center; 
+            padding: 15px 20px; 
+            cursor: pointer; 
+            transition: background-color 0.3s; 
+            color: var(--menu-text); 
+            border-bottom: 1px solid var(--menu-border); 
+        }
+        
+        .menu-option:hover { 
+            background-color: var(--menu-hover); 
+        }
+        
+        .menu-option i { 
+            margin-right: 15px; 
+            font-size: 18px; 
+            color: var(--icon-color); 
+            width: 20px; 
+            text-align: center; 
+        }
+
+        /* 3. Paneles Internos (Capas) */
+        .modal-panel.side-panel {
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%;
+            background-color: var(--bg-color);
+            
+            /* Estado Inicial: Oculto pero existente */
+            visibility: hidden; 
+            opacity: 0; 
+            pointer-events: none;
+            transition: opacity 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94), 
+                        transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                        visibility 0.4s;
+            
+            /* Z-Index base para Nivel 1 */
+            z-index: var(--z-panel-1);
+            
+            /* Layout */
+            display: flex; 
+            flex-direction: column;
+        }
+
+        /* Nivel 2 (Sub-opciones) */
+        .modal-panel.side-panel.sub-panel { 
+            z-index: var(--z-panel-2); 
+        }
+
+        /* Estado Activo */
+        .modal-panel.side-panel.active { 
+            visibility: visible; 
+            opacity: 1; 
+            pointer-events: auto; 
+        }
+
+        /* Contenido del Panel */
         .modal-content {
             background-color: var(--card-background);
-            border-radius: 12px;
-            padding: 0;
-            width: 90%;
-            max-width: 500px;
-            box-shadow: 0 5px 25px rgba(0,0,0,0.3);
-            overflow: hidden;
-            display: flex;
+            width: 100%; 
+            height: 100%;
+            display: flex; 
             flex-direction: column;
-            max-height: 90vh;
-            margin: 20px 0;
+            border-radius: 0; 
+            box-shadow: none;
         }
-        
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px 25px;
+
+        /* Headers de Navegación Interna (< Título) */
+        .panel-nav-header {
+            display: flex; 
+            align-items: center; 
+            padding: 15px 20px;
             border-bottom: 1px solid var(--border-color);
-            background-color: var(--primary-color);
-            color: white;
-            position: sticky;
-            top: 0;
-            z-index: 10;
+            background-color: var(--card-background);
+            flex-shrink: 0;
         }
         
-        .modal-header h2 {
-            font-family: var(--font-secondary);
-            font-size: 20px;
-        }
-        
-        .modal-body {
-            padding: 25px;
-            flex: 1;
-            overflow-y: auto;
-        }
-        
-        .modal-close {
-            background: none;
-            border: none;
-            font-size: 20px;
-            cursor: pointer;
-            color: white;
+        .panel-nav-back {
+            background: none; 
+            border: none; 
+            font-size: 1.2rem; 
+            margin-right: 15px;
+            cursor: pointer; 
+            color: var(--text-color); 
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
             padding: 5px;
-            border-radius: 50%;
-            transition: background-color 0.3s, transform 0.2s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 36px;
-            height: 36px;
         }
         
-        .modal-close:hover {
-            background-color: rgba(255, 255, 255, 0.2);
+        .panel-nav-title { 
+            font-size: 1.1rem; 
+            font-weight: 700; 
+            color: var(--text-color); 
+            font-family: var(--font-secondary); 
         }
         
-        .modal-close:active {
-            transform: scale(0.95);
+        .modal-body { 
+            flex: 1; 
+            overflow-y: auto; 
+            padding: 20px; 
+        }
+
+        /* ===== ADAPTACIÓN ESCRITORIO ===== */
+        @media (min-width: 769px) {
+            .side-menu { 
+                width: 400px; 
+                left: -400px;
+            }
+            
+            /* En escritorio, los paneles son flotantes y centrados, pero mantienen la lógica de capas */
+            .modal-panel.side-panel {
+                background-color: rgba(0,0,0,0.3); /* Fondo oscuro transparente */
+                align-items: center; 
+                justify-content: center;
+            }
+            
+            .modal-content {
+                width: 500px; 
+                height: 80vh; 
+                max-height: 800px;
+                border-radius: 20px; 
+                box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+                transition: border-radius 0.3s ease;
+            }
+        }
+
+        /* ===== MODALES EXTERNOS (Alertas, etc.) ===== */
+        .modal-panel:not(.side-panel) { 
+            display: none; 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            background-color: rgba(0,0,0,0.7); 
+            z-index: var(--z-modal); 
+            align-items: center; 
+            justify-content: center; 
         }
         
-        /* ===== ESTILOS DE MENÚ LATERAL ===== */
-        .side-menu {
-            position: fixed;
-            top: 0;
-            left: -80%;
-            width: 80%;
-            height: 100%;
-            background-color: var(--menu-bg);
-            box-shadow: 2px 0 10px rgba(0,0,0,0.2);
-            z-index: 1000;
-            transition: left 0.3s ease;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
+        .modal-panel.active:not(.side-panel) { 
+            display: flex; 
         }
         
-        .side-menu.open {
-            left: 0;
+        .price-alert-content { 
+            background-color: var(--card-background); 
+            border-radius: 12px; 
+            padding: 25px; 
+            width: 90%; 
+            max-width: 400px; 
         }
         
-        .menu-header {
-            background-color: var(--menu-header);
-            color: white;
-            padding: 25px 20px;
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            transition: background-color 0.3s;
+        .modal-header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-bottom: 20px; 
         }
         
-        .profile-image-container {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            overflow: hidden;
-            margin-bottom: 15px;
-            cursor: pointer;
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            transition: transform 0.3s, border-color 0.3s;
-            position: relative;
+        .modal-close { 
+            background: none; 
+            border: none; 
+            font-size: 20px; 
+            cursor: pointer; 
+            color: var(--text-color); 
+        }
+
+        /* Utilería */
+        .btn-scale { 
+            transition: transform 0.2s ease; 
         }
         
-        .profile-image-container:hover {
-            transform: scale(1.05);
-            border-color: rgba(255, 255, 255, 0.6);
+        .btn-scale:hover { 
+            transform: scale(1.05); 
         }
         
-        .profile-image-container img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
+        .btn-scale:active { 
+            transform: scale(0.95); 
         }
         
-        .menu-header h2 {
-            font-size: 22px;
-            margin-bottom: 5px;
-            font-family: var(--font-title);
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        body.nav-open { 
+            overflow: hidden; 
         }
         
         .edit-profile-btn-main {
-            background-color: rgba(255, 255, 255, 0.2);
+            background-color: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(10px);
             color: white;
-            border: none;
+            border: 1px solid rgba(255, 255, 255, 0.3);
             border-radius: 20px;
             padding: 8px 16px;
             font-size: 14px;
@@ -1160,60 +1356,16 @@
             justify-content: center;
             transition: background-color 0.3s, transform 0.2s ease;
             margin-top: 10px;
-            font-family: var(--font-secondary);
         }
         
         .edit-profile-btn-main:hover {
-            background-color: rgba(255, 255, 255, 0.3);
+            background-color: rgba(255, 255, 255, 0.35);
             transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
         
         .edit-profile-btn-main i {
             margin-right: 6px;
-        }
-        
-        .menu-options {
-            padding: 20px 0;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .menu-option {
-            display: flex;
-            align-items: center;
-            padding: 15px 20px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-            font-family: var(--font-primary);
-            color: var(--menu-text);
-            position: relative;
-        }
-        
-        .menu-option:hover {
-            background-color: var(--menu-hover);
-        }
-        
-        .menu-option i {
-            margin-right: 15px;
-            font-size: 18px;
-            color: var(--icon-color);
-            width: 20px;
-            text-align: center;
-        }
-        
-        [data-theme="dark"] .menu-option i {
-            color: var(--text-on-accent);
-        }
-        
-        .menu-option span {
-            font-size: 16px;
-        }
-        
-        .menu-separator {
-            height: 1px;
-            background-color: var(--menu-border);
-            margin: 5px 20px;
         }
         
         .menu-footer {
@@ -1222,24 +1374,8 @@
             font-size: 12px;
             color: #888;
             border-top: 1px solid var(--menu-border);
-            font-family: var(--font-primary);
         }
-        
-        .overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.5);
-            z-index: 999;
-            display: none;
-        }
-        
-        .overlay.active {
-            display: block;
-        }
-        
+
         /* ===== ESTILOS DE NOTIFICACIONES ===== */
         .notification-item {
             padding: 15px;
@@ -2010,7 +2146,7 @@
             width: 100%;
             height: 100%;
             background-color: rgba(0,0,0,0.7);
-            z-index: 1003;
+            z-index: var(--z-modal);
             align-items: center;
             justify-content: center;
         }
@@ -2356,6 +2492,124 @@
             font-family: var(--font-primary);
         }
         
+        /* ===== MEJORAS DE ACCESIBILIDAD ===== */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+        
+        #liveAnnouncements {
+            position: absolute;
+            left: -10000px;
+            top: auto;
+            width: 1px;
+            height: 1px;
+            overflow: hidden;
+        }
+        
+        /* ===== ESTILOS PARA SKELETON LOADING ===== */
+        .skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+            border-radius: 4px;
+        }
+        
+        .skeleton-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .skeleton-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        
+        .skeleton-title {
+            height: 20px;
+            flex: 1;
+        }
+        
+        .skeleton-line {
+            height: 16px;
+            margin-bottom: 8px;
+        }
+        
+        .skeleton-line.short {
+            width: 60%;
+        }
+        
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        
+        /* ===== ESTILOS PARA ALTO CONTRASTE ===== */
+        @media (prefers-contrast: high) {
+            :root {
+                --border-color: #000000;
+                --shadow: 0 2px 8px rgba(0,0,0,0.8);
+            }
+        }
+        
+        /* ===== ESTILOS PARA REDUCCIÓN DE MOVIMIENTO ===== */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+            
+            .center-button {
+                animation: none;
+            }
+            
+            .planifica-icon {
+                animation: none;
+            }
+            
+            .skeleton {
+                animation: none;
+            }
+        }
+        
+        /* ===== NAVEGACIÓN MOBILE - MEJORAS ===== */
+        @media (max-width: 768px) {
+            /* Ocultar barras al abrir paneles del sistema lateral */
+            body.nav-open .top-bar {
+                transform: translateY(-100%);
+            }
+            
+            body.nav-open .nav-container {
+                transform: translateY(100%);
+            }
+        }
+
+        /* Para pantallas muy pequeñas */
+        @media (max-width: 360px) {
+            .panel-nav-header {
+                padding: 12px 15px;
+            }
+            
+            .modal-body {
+                padding: 15px;
+            }
+            
+            .wallet-card {
+                padding: 15px 12px;
+            }
+        }
+        
         /* ===== ANIMACIONES ===== */
         .btn-scale {
             transition: transform 0.2s ease;
@@ -2374,7 +2628,9 @@
         }
         
         .center-button:hover {
-            transform: translateX(-50%) scale(1.05);
+            transform: translateX(-50%) scale(1.1);
+            animation: none;
+            box-shadow: 0 10px 35px rgba(34, 197, 94, 0.7);
         }
         
         .center-button:active {
@@ -2400,6 +2656,46 @@
             transform: scale(1);
         }
         
+        /* ===== ANIMACIONES MEJORADAS ===== */
+        @keyframes cardAppear {
+            from {
+                opacity: 0;
+                transform: translateY(20px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        
+        /* Retraso escalonado para las tarjetas */
+        .wallet-card:nth-child(1) { animation-delay: 0.1s; }
+        .wallet-card:nth-child(2) { animation-delay: 0.15s; }
+        .wallet-card:nth-child(3) { animation-delay: 0.2s; }
+        .wallet-card:nth-child(4) { animation-delay: 0.25s; }
+        .wallet-card:nth-child(5) { animation-delay: 0.3s; }
+        
+        /* Animación sutil para los botones de navegación */
+        .nav-item:not(.center-button):hover {
+            transform: translateY(-2px);
+        }
+        
+        .nav-item:not(.center-button)::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: var(--primary-color);
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            transform: translateX(-50%);
+        }
+        
+        .nav-item:not(.center-button).active::after {
+            width: 70%;
+        }
+        
         /* ===== MEDIA QUERIES ===== */
         @media (max-width: 768px) {
             .section-title {
@@ -2415,7 +2711,7 @@
                 grid-template-columns: 1fr;
             }
             
-            .modal-content {
+            .modal-panel:not(.side-panel) .modal-content {
                 width: 95%;
                 padding: 20px;
                 max-height: 95vh;
@@ -2806,9 +3102,17 @@
         </a>
     </div>
     
-    <!-- Menú Lateral -->
+    <!-- === SISTEMA DE NAVEGACIÓN LATERAL MEJORADO === -->
+    
+    <!-- Overlay -->
+    <div class="overlay" id="overlay" role="button" aria-label="Cerrar menú"></div>
+    
+    <!-- Menú Lateral (Nivel 0) -->
     <div class="side-menu" id="sideMenu" role="navigation">
-        <div class="menu-header">
+        <div class="menu-header" id="menuHeader">
+            <button class="menu-close-btn btn-scale" id="sideMenuCloseBtn" aria-label="Cerrar menú">
+                <i class="fas fa-times"></i>
+            </button>
             <div class="profile-image-container" id="profileImageContainer" role="button" aria-label="Cambiar imagen de perfil">
                 <img id="profileImage" src="https://raw.githubusercontent.com/Brittleleaf/leafcalc.app/main/Images/Icons/Default_pfp.svg" alt="Perfil">
             </div>
@@ -2823,17 +3127,14 @@
                 <i class="fas fa-bell"></i>
                 <span>Notificaciones</span>
             </div>
-            <div class="menu-separator"></div>
             <div class="menu-option" id="userDataOption" role="button">
                 <i class="fas fa-user"></i>
                 <span>Datos de usuario</span>
             </div>
-            <div class="menu-separator"></div>
             <div class="menu-option" id="settingsOption" role="button">
                 <i class="fas fa-cog"></i>
                 <span>Configuración</span>
             </div>
-            <div class="menu-separator"></div>
             <div class="menu-option" id="donateOption" role="button">
                 <i class="fas fa-donate"></i>
                 <span>Donar</span>
@@ -2843,16 +3144,13 @@
             <p>Leffi App v1.0.2 • Diseñado para freelancers</p>
         </div>
     </div>
-    <div class="overlay" id="overlay" role="button" aria-label="Cerrar menú"></div>
     
-    <!-- Paneles Modales -->
-    <div class="modal-panel" id="notificationPanel" role="dialog" aria-modal="true" aria-labelledby="notificationTitle">
+    <!-- Paneles Internos (Capas) -->
+    <div class="modal-panel side-panel" id="notificationPanel">
         <div class="modal-content">
-            <div class="modal-header">
-                <h2 id="notificationTitle">Notificaciones</h2>
-                <button class="modal-close btn-scale" id="closeNotification" aria-label="Cerrar notificaciones">
-                    <i class="fas fa-times"></i>
-                </button>
+            <div class="panel-nav-header">
+                <button class="panel-nav-back btn-scale" id="backNotificationPanel"><i class="fas fa-chevron-left"></i></button>
+                <span class="panel-nav-title">Notificaciones</span>
             </div>
             <div class="modal-body">
                 <div id="notificationList">
@@ -2866,14 +3164,12 @@
             </div>
         </div>
     </div>
-    
-    <div class="modal-panel" id="userDataPanel" role="dialog" aria-modal="true" aria-labelledby="userDataTitle">
+
+    <div class="modal-panel side-panel" id="userDataPanel">
         <div class="modal-content">
-            <div class="modal-header">
-                <h2 id="userDataTitle">Datos de usuario</h2>
-                <button class="modal-close btn-scale" id="closeUserData" aria-label="Cerrar datos de usuario">
-                    <i class="fas fa-times"></i>
-                </button>
+            <div class="panel-nav-header">
+                <button class="panel-nav-back btn-scale" id="backUserDataPanel"><i class="fas fa-chevron-left"></i></button>
+                <span class="panel-nav-title">Datos de Usuario</span>
             </div>
             <div class="modal-body">
                 <div class="user-data-section">
@@ -2931,15 +3227,12 @@
             </div>
         </div>
     </div>
-    
-    <div class="modal-panel" id="personalDataPanel" role="dialog" aria-modal="true" aria-labelledby="personalDataTitle">
+
+    <div class="modal-panel side-panel sub-panel" id="personalDataPanel">
         <div class="modal-content">
-            <div class="modal-header">
-                <button class="modal-close btn-scale" id="backToUserData" aria-label="Volver a datos de usuario">
-                    <i class="fas fa-arrow-left"></i>
-                </button>
-                <h2 id="personalDataTitle">Datos Personales</h2>
-                <div></div>
+            <div class="panel-nav-header">
+                <button class="panel-nav-back btn-scale" id="backPersonalDataPanel"><i class="fas fa-chevron-left"></i></button>
+                <span class="panel-nav-title">Datos Personales</span>
             </div>
             <div class="modal-body">
                 <div class="personal-data-section">
@@ -2963,14 +3256,12 @@
             </div>
         </div>
     </div>
-    
-    <div class="modal-panel" id="appearancePanel" role="dialog" aria-modal="true" aria-labelledby="appearanceTitle">
+
+    <div class="modal-panel side-panel sub-panel" id="appearancePanel">
         <div class="modal-content">
-            <div class="modal-header">
-                <h2 id="appearanceTitle">Personalización de Apariencia</h2>
-                <button class="modal-close btn-scale" id="closeAppearance" aria-label="Cerrar personalización">
-                    <i class="fas fa-times"></i>
-                </button>
+            <div class="panel-nav-header">
+                <button class="panel-nav-back btn-scale" id="backAppearancePanel"><i class="fas fa-chevron-left"></i></button>
+                <span class="panel-nav-title">Personalización</span>
             </div>
             <div class="modal-body">
                 <div class="appearance-section">
@@ -3018,14 +3309,12 @@
             </div>
         </div>
     </div>
-    
-    <div class="modal-panel" id="settingsPanel" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+
+    <div class="modal-panel side-panel" id="settingsPanel">
         <div class="modal-content">
-            <div class="modal-header">
-                <h2 id="settingsTitle">Configuración</h2>
-                <button class="modal-close btn-scale" id="closeSettings" aria-label="Cerrar configuración">
-                    <i class="fas fa-times"></i>
-                </button>
+            <div class="panel-nav-header">
+                <button class="panel-nav-back btn-scale" id="backSettingsPanel"><i class="fas fa-chevron-left"></i></button>
+                <span class="panel-nav-title">Configuración</span>
             </div>
             <div class="modal-body">
                 <div class="settings-section">
@@ -3051,6 +3340,7 @@
         </div>
     </div>
     
+    <!-- ===== PANELES EXTERNOS (COMPORTAMIENTO ORIGINAL) ===== -->
     <div class="modal-panel" id="priceAlertPanel" role="dialog" aria-modal="true" aria-labelledby="alertTitle">
         <div class="price-alert-content">
             <div class="modal-header">
@@ -3108,6 +3398,7 @@
     
     <div class="loading-indicator" id="loadingIndicator"></div>
     <div class="toast" id="toast" role="alert"></div>
+    <div id="liveAnnouncements" aria-live="polite" aria-atomic="true" class="sr-only"></div>
     
     <script>
         // ===== ESTADO GLOBAL DE LA APLICACIÓN =====
@@ -4650,11 +4941,167 @@
             }
         };
 
+        // ===== SISTEMA DE NAVEGACIÓN LATERAL MEJORADO =====
+        const NavSystem = {
+            stack: [], // Historial de paneles abiertos
+
+            init() {
+                // Listeners Generales
+                document.getElementById('menuBtn').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    this.openRoot();
+                });
+                
+                // Botón X del menú (Cierra todo)
+                document.getElementById('sideMenuCloseBtn').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    this.closeAll();
+                });
+                
+                // Overlay cierra todo
+                document.getElementById('overlay').addEventListener('click', () => this.closeAll());
+
+                // Botón Notificaciones Top Bar (Caso especial: directo)
+                document.getElementById('notificationBtn').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    this.openDirect('notificationPanel');
+                });
+
+                // Cierre de modal externo
+                document.getElementById('closePriceAlert').addEventListener('click', () => {
+                    document.getElementById('priceAlertPanel').classList.remove('active');
+                });
+
+                // Botones de retroceso en paneles
+                document.getElementById('backNotificationPanel').addEventListener('click', () => this.back());
+                document.getElementById('backUserDataPanel').addEventListener('click', () => this.back());
+                document.getElementById('backSettingsPanel').addEventListener('click', () => this.back());
+                document.getElementById('backPersonalDataPanel').addEventListener('click', () => this.back());
+                document.getElementById('backAppearancePanel').addEventListener('click', () => this.back());
+
+                // Opciones del menú lateral
+                document.getElementById('notificationOption').addEventListener('click', () => this.open('notificationPanel'));
+                document.getElementById('userDataOption').addEventListener('click', () => this.open('userDataPanel'));
+                document.getElementById('settingsOption').addEventListener('click', () => this.open('settingsPanel'));
+                document.getElementById('donateOption').addEventListener('click', () => {
+                    Utils.showToast('Función de donación se implementará próximamente');
+                });
+                
+                // Botones de navegación entre paneles
+                document.getElementById('editProfileBtnMain').addEventListener('click', () => this.open('userDataPanel'));
+                document.getElementById('personalDataBtn').addEventListener('click', () => this.open('personalDataPanel'));
+                document.getElementById('appearanceBtn').addEventListener('click', () => this.open('appearancePanel'));
+                document.getElementById('savePersonalDataBtn').addEventListener('click', () => {
+                    PersonalDataManager.savePersonalData();
+                    this.back();
+                });
+                
+                // Botón de limpiar notificaciones
+                document.getElementById('clearNotificationsBtn').addEventListener('click', () => {
+                    this.showConfirmationDialog('clear-notifications');
+                });
+            },
+
+            // Abre el Menú Lateral (Nivel 0)
+            openRoot() {
+                this.stack = ['sideMenu'];
+                document.getElementById('sideMenu').classList.add('open');
+                document.getElementById('overlay').classList.add('active');
+                document.body.classList.add('nav-open');
+            },
+
+            // Abre un panel interno sobre lo que ya existe
+            open(panelId) {
+                const panel = document.getElementById(panelId);
+                if (!panel) return;
+
+                // Añadir al stack
+                this.stack.push(panelId);
+                
+                // Mostrar panel (Z-Index se encarga de tapar el anterior)
+                panel.classList.add('active');
+                
+                // Ocultar menú lateral si estamos abriendo desde él
+                if (this.stack.length > 1) {
+                    document.getElementById('sideMenu').classList.remove('open');
+                }
+            },
+
+            // Abre un panel directamente sin menú lateral (ej: desde TopBar)
+            openDirect(panelId) {
+                this.stack = [panelId];
+                const panel = document.getElementById(panelId);
+                if (panel) panel.classList.add('active');
+                
+                document.getElementById('overlay').classList.add('active');
+                document.body.classList.add('nav-open');
+            },
+
+            // Retroceder un nivel
+            back() {
+                if (this.stack.length === 0) return;
+
+                // Sacar el último panel
+                const currentId = this.stack.pop();
+                
+                // Si el último era sideMenu, cerramos todo
+                if (currentId === 'sideMenu') {
+                    this.closeAll();
+                    return;
+                }
+
+                // Ocultar SOLO el panel actual (revelando el de abajo)
+                const panel = document.getElementById(currentId);
+                if (panel) panel.classList.remove('active');
+
+                // Si la pila se vació (ej: venía de TopBar), limpiar body
+                if (this.stack.length === 0) {
+                    document.body.classList.remove('nav-open');
+                    document.getElementById('overlay').classList.remove('active');
+                } else {
+                    // Si quedan elementos en la pila, mostrar el anterior
+                    const previousId = this.stack[this.stack.length - 1];
+                    if (previousId === 'sideMenu') {
+                        document.getElementById('sideMenu').classList.add('open');
+                    }
+                }
+            },
+
+            // Cierra todo
+            closeAll() {
+                this.stack = [];
+                document.getElementById('sideMenu').classList.remove('open');
+                document.getElementById('overlay').classList.remove('active');
+                document.querySelectorAll('.modal-panel.side-panel').forEach(p => p.classList.remove('active'));
+                document.body.classList.remove('nav-open');
+            },
+
+            showConfirmationDialog(action, id = null) {
+                const dialog = document.getElementById('confirmationDialog');
+                const message = document.getElementById('confirmationMessage');
+                const confirmBtn = document.getElementById('confirmConfirmation');
+                dialog.dataset.action = action;
+                dialog.dataset.id = id;
+                if (action === 'clear-notifications') {
+                    message.textContent = '¿Seguro que deseas vaciar las notificaciones?';
+                    confirmBtn.textContent = 'Borrar';
+                } else if (action === 'show-wallet') {
+                    const wallet = wallets.find(w => w.id === id);
+                    message.textContent = `¿Quieres volver visible la billetera "${wallet.name}"?`;
+                    confirmBtn.textContent = 'Mostrar';
+                }
+                
+                dialog.classList.add('active');
+            }
+        };
+
         // ===== MÓDULO DE UI =====
         const UIManager = {
             init() {
                 this.setupEventListeners();
                 this.loadPreferences();
+                NavSystem.init();
+                this.setupProfileBackground();
             },
 
             setupEventListeners() {
@@ -4665,82 +5112,6 @@
                     // Navegación
                     if (target.closest('.nav-item')) {
                         this.handleNavItemClick(e);
-                    }
-                    
-                    // Botones de menú lateral
-                    if (target.closest('#menuBtn') || target.closest('#menuBtnOriginal')) {
-                        this.toggleMenu();
-                    }
-                    
-                    // Botones de notificaciones
-                    if (target.closest('#notificationBtn') || target.closest('#notificationBtnOriginal')) {
-                        this.openPanel('notificationPanel');
-                    }
-                    
-                    // Opciones de menú lateral
-                    if (target.closest('#notificationOption')) {
-                        this.openPanel('notificationPanel');
-                    }
-                    if (target.closest('#userDataOption')) {
-                        this.openPanel('userDataPanel');
-                    }
-                    if (target.closest('#settingsOption')) {
-                        this.openPanel('settingsPanel');
-                    }
-                    if (target.closest('#donateOption')) {
-                        this.closeMenu();
-                        Utils.showToast('Función de donación se implementará próximamente');
-                    }
-                    
-                    // Botones de cierre
-                    if (target.closest('#overlay')) {
-                        this.closeMenu();
-                    }
-                    if (target.closest('.modal-close') || target.closest('.close-confirmation') || target.closest('#closePriceAlert')) {
-                        const panel = target.closest('.modal-panel');
-                        if (panel) panel.classList.remove('active');
-                    }
-                    
-                    // Botones de acción
-                    if (target.closest('#themeToggle')) {
-                        this.toggleTheme();
-                    }
-                    if (target.closest('#clearNotificationsBtn')) {
-                        this.showConfirmationDialog('clear-notifications');
-                    }
-                    if (target.closest('#editProfileBtnMain')) {
-                        this.openPanel('userDataPanel');
-                    }
-                    if (target.closest('#personalDataBtn')) {
-                        document.getElementById('userDataPanel').classList.remove('active');
-                        document.getElementById('personalDataPanel').classList.add('active');
-                    }
-                    if (target.closest('#appearanceBtn')) {
-                        document.getElementById('userDataPanel').classList.remove('active');
-                        document.getElementById('appearancePanel').classList.add('active');
-                    }
-                    if (target.closest('#backToUserData')) {
-                        document.getElementById('personalDataPanel').classList.remove('active');
-                        document.getElementById('userDataPanel').classList.add('active');
-                    }
-                    if (target.closest('#savePersonalDataBtn')) {
-                        PersonalDataManager.savePersonalData();
-                    }
-                    if (target.closest('#createAlertBtn')) {
-                        AlertManager.createOrUpdateAlert();
-                    }
-                    if (target.closest('.alert-type-option')) {
-                        AlertManager.selectAlertType(target.closest('.alert-type-option').dataset.type);
-                    }
-                    if (target.closest('#cancelConfirmation')) {
-                        this.closeConfirmationDialog();
-                    }
-                    if (target.closest('#confirmConfirmation')) {
-                        this.handleConfirmAction();
-                    }
-                    if (target.closest('.center-button')) {
-                        e.preventDefault();
-                        Utils.showToast('La función Leffi Share continua en desarrollo');
                     }
                     
                     // Opciones de billeteras
@@ -4780,6 +5151,20 @@
                         this.closeAllWalletOptionsMenus();
                         document.querySelectorAll('.wallet-alert.edit-mode').forEach(alert => alert.classList.remove('edit-mode'));
                     }
+                    
+                    // Confirmación de diálogos
+                    if (target.closest('#cancelConfirmation')) {
+                        this.closeConfirmationDialog();
+                    }
+                    if (target.closest('#confirmConfirmation')) {
+                        this.handleConfirmAction();
+                    }
+                    
+                    // Centro de la barra inferior
+                    if (target.closest('.center-button')) {
+                        e.preventDefault();
+                        Utils.showToast('La función Leffi Share continua en desarrollo');
+                    }
                 });
 
                 // Eventos de entrada
@@ -4809,6 +5194,24 @@
                 // Eventos de imágenes de perfil
                 document.getElementById('profileImageContainer').addEventListener('click', () => document.getElementById('profileImageInput').click());
                 document.getElementById('profileImageUpload').addEventListener('click', () => document.getElementById('profileImageInput').click());
+                
+                // Eventos de alertas
+                document.getElementById('createAlertBtn').addEventListener('click', () => AlertManager.createOrUpdateAlert());
+                document.querySelectorAll('.alert-type-option').forEach(option => {
+                    option.addEventListener('click', () => AlertManager.selectAlertType(option.dataset.type));
+                });
+                
+                // Evento del interruptor de tema - CORREGIDO
+                document.getElementById('themeToggle').addEventListener('click', () => this.toggleTheme());
+            },
+
+            toggleTheme() {
+                const themeToggle = document.getElementById('themeToggle');
+                const isDark = !themeToggle.classList.contains('active');
+                themeToggle.classList.toggle('active');
+                document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+                localStorage.setItem('theme', isDark ? 'dark' : 'light');
+                themeToggle.setAttribute('aria-checked', isDark);
             },
 
             handleNavItemClick(e) {
@@ -4840,21 +5243,7 @@
             },
 
             showConfirmationDialog(action, id = null) {
-                const dialog = document.getElementById('confirmationDialog');
-                const message = document.getElementById('confirmationMessage');
-                const confirmBtn = document.getElementById('confirmConfirmation');
-                dialog.dataset.action = action;
-                dialog.dataset.id = id;
-                if (action === 'clear-notifications') {
-                    message.textContent = '¿Seguro que deseas vaciar las notificaciones?';
-                    confirmBtn.textContent = 'Borrar';
-                } else if (action === 'show-wallet') {
-                    const wallet = wallets.find(w => w.id === id);
-                    message.textContent = `¿Quieres volver visible la billetera "${wallet.name}"?`;
-                    confirmBtn.textContent = 'Mostrar';
-                }
-                
-                dialog.classList.add('active');
+                NavSystem.showConfirmationDialog(action, id);
             },
 
             closeConfirmationDialog() {
@@ -4880,11 +5269,6 @@
                 list.classList.toggle('open');
             },
 
-            openPanel(panelId) {
-                this.closeMenu();
-                document.getElementById(panelId).classList.add('active');
-            },
-
             handleTabClick(tab) {
                 document.querySelectorAll('.tab.active').forEach(t => t.classList.remove('active'));
                 document.querySelectorAll('.tab-content.active').forEach(c => c.classList.remove('active'));
@@ -4899,16 +5283,6 @@
                 document.getElementById('receiveMode').style.display = AppState.currentMode === 'receive' ? 'block' : 'none';
                 document.getElementById('sendMode').style.display = AppState.currentMode === 'send' ? 'block' : 'none';
                 CalculationManager.calculateAllResults();
-            },
-
-            toggleMenu() {
-                document.getElementById('sideMenu').classList.add('open');
-                document.getElementById('overlay').classList.add('active');
-            },
-
-            closeMenu() {
-                document.getElementById('sideMenu').classList.remove('open');
-                document.getElementById('overlay').classList.remove('active');
             },
 
             handleWalletOptionsClick(e) {
@@ -4951,15 +5325,6 @@
                 localStorage.setItem('themeColor', themeName.toLowerCase());
             },
 
-            toggleTheme() {
-                const themeToggle = document.getElementById('themeToggle');
-                const isDark = !themeToggle.classList.contains('active');
-                themeToggle.classList.toggle('active');
-                document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
-                localStorage.setItem('theme', isDark ? 'dark' : 'light');
-                themeToggle.setAttribute('aria-checked', isDark);
-            },
-
             changeCurrency(currency) {
                 AppState.currentCurrency = currency;
                 localStorage.setItem('currency', currency);
@@ -4984,6 +5349,9 @@
                         document.getElementById('profileImage').src = imageSrc;
                         document.getElementById('userDataProfileImage').src = imageSrc;
                         document.getElementById('topBarProfileImage').src = imageSrc;
+                        
+                        // Aplicar el fondo difuminado
+                        this.applyProfileBackground(imageSrc);
                     };
                     reader.readAsDataURL(file);
                 }
@@ -4991,10 +5359,15 @@
 
             loadPreferences() {
                 const savedTheme = localStorage.getItem('theme');
+                const themeToggle = document.getElementById('themeToggle');
                 if (savedTheme === 'dark') {
-                    document.getElementById('themeToggle').classList.add('active');
+                    themeToggle.classList.add('active');
                     document.documentElement.setAttribute('data-theme', 'dark');
-                    document.getElementById('themeToggle').setAttribute('aria-checked', 'true');
+                    themeToggle.setAttribute('aria-checked', 'true');
+                } else {
+                    themeToggle.classList.remove('active');
+                    document.documentElement.setAttribute('data-theme', 'light');
+                    themeToggle.setAttribute('aria-checked', 'false');
                 }
                 
                 const savedThemeColor = localStorage.getItem('themeColor') || 'Predeterminado';
@@ -5012,6 +5385,26 @@
                     document.getElementById('profileImage').src = savedImage;
                     document.getElementById('userDataProfileImage').src = savedImage;
                     document.getElementById('topBarProfileImage').src = savedImage;
+                    
+                    // Aplicar el fondo difuminado si la imagen no es la predeterminada
+                    if (savedImage !== 'https://raw.githubusercontent.com/Brittleleaf/leafcalc.app/main/Images/Icons/Default_pfp.svg') {
+                        this.applyProfileBackground(savedImage);
+                    }
+                }
+            },
+
+            setupProfileBackground() {
+                const savedImage = localStorage.getItem('profileImage');
+                if (savedImage && savedImage !== 'https://raw.githubusercontent.com/Brittleleaf/leafcalc.app/main/Images/Icons/Default_pfp.svg') {
+                    this.applyProfileBackground(savedImage);
+                }
+            },
+
+            applyProfileBackground(imageSrc) {
+                const menuHeader = document.querySelector('.menu-header');
+                if (menuHeader) {
+                    menuHeader.style.setProperty('--profile-bg-image', `url(${imageSrc})`);
+                    menuHeader.classList.add('has-profile-bg');
                 }
             },
 
@@ -5342,30 +5735,36 @@
             },
 
             switchTabSection(tabName) {
-                document.querySelectorAll('.tab-content').forEach(tab => {
-                    tab.classList.remove('active');
-                    const wrapper = tab.querySelector('.tab-content-wrapper');
-                    if (wrapper) {
-                        wrapper.classList.remove('active');
-                    }
-                });
-                
-                const targetTab = document.getElementById(`${tabName}-tab`);
-                if (targetTab) {
-                    targetTab.classList.add('active');
-                    const wrapper = targetTab.querySelector('.tab-content-wrapper');
-                    if (wrapper) {
-                        wrapper.offsetHeight;
-                        wrapper.classList.add('active');
-                    }
+                // Animar la salida de la pestaña actual
+                const currentActive = document.querySelector('.tab-content.active .tab-content-wrapper.active');
+                if (currentActive) {
+                    currentActive.classList.remove('active');
                 }
                 
-                document.querySelectorAll('.nav-item').forEach(item => {
-                    item.classList.remove('active');
-                    if (item.dataset.name === this.getNavNameForTab(tabName)) {
-                        item.classList.add('active');
+                // Pequeño delay para la animación de entrada
+                setTimeout(() => {
+                    document.querySelectorAll('.tab-content').forEach(tab => {
+                        tab.classList.remove('active');
+                    });
+                    
+                    const targetTab = document.getElementById(`${tabName}-tab`);
+                    if (targetTab) {
+                        targetTab.classList.add('active');
+                        const wrapper = targetTab.querySelector('.tab-content-wrapper');
+                        if (wrapper) {
+                            // Forzar reflow para reiniciar la animación
+                            wrapper.offsetHeight;
+                            wrapper.classList.add('active');
+                        }
                     }
-                });
+                    
+                    document.querySelectorAll('.nav-item').forEach(item => {
+                        item.classList.remove('active');
+                        if (item.dataset.name === this.getNavNameForTab(tabName)) {
+                            item.classList.add('active');
+                        }
+                    });
+                }, 50);
             },
 
             getNavNameForTab(tabName) {
